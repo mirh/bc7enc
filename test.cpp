@@ -370,25 +370,13 @@ static bool save_dds(const char *pFilename, uint32_t width, uint32_t height, con
 				
 	desc.ddpfPixelFormat.dwFlags |= DDPF_FOURCC;
 
-	desc.ddpfPixelFormat.dwFourCC = (uint32_t)PIXEL_FMT_FOURCC('D', 'X', '1', '0');
+	desc.ddpfPixelFormat.dwFourCC = (uint32_t)PIXEL_FMT_FOURCC('D', 'X', 'T', '1');
 	desc.ddpfPixelFormat.dwRGBBitCount = 0;
 
 	desc.lPitch = (((desc.dwWidth + 3) & ~3) * ((desc.dwHeight + 3) & ~3) * pixel_format_bpp) >> 3;
 	desc.dwFlags |= DDSD_LINEARSIZE;
 
 	fwrite(&desc, sizeof(desc), 1, pFile);
-		
-	DDS_HEADER_DXT10 hdr10;
-	memset(&hdr10, 0, sizeof(hdr10));
-
-	// Not all tools support DXGI_FORMAT_BC7_UNORM_SRGB (like NVTT), but ddsview in DirectXTex pays attention to it. So not sure what to do here.
-	// For best compatibility just write DXGI_FORMAT_BC7_UNORM.
-	//hdr10.dxgiFormat = srgb ? DXGI_FORMAT_BC7_UNORM_SRGB : DXGI_FORMAT_BC7_UNORM;
-	hdr10.dxgiFormat = dxgi_format; // DXGI_FORMAT_BC7_UNORM;
-	hdr10.resourceDimension = D3D10_RESOURCE_DIMENSION_TEXTURE2D;
-	hdr10.arraySize = 1;
-
-	fwrite(&hdr10, sizeof(hdr10), 1, pFile);
 
 	fwrite(pBlocks, desc.lPitch, 1, pFile);
 
